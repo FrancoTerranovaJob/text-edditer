@@ -27,7 +27,7 @@ class BottomNavigator extends StatelessWidget {
           switch (index) {
             case 0:
               AppNavigator.pushReplace(
-                  page: const EditingPage(), context: context);
+                  page:  EditingPage(), context: context);
             case 1:
               AppNavigator.pushReplace(
                   page: const SavedDocuments(), context: context);
