@@ -27,7 +27,7 @@ class TextEdditerController extends TextEditingController {
       print(value.selection.extentOffset);
     }
     var string = text;
-    final re = RegExp(r'\s?(\w+)|(<h)[\w]*[\n]*(h>)');
+    final re = RegExp(r'(<h.*?[\s\S]*?h>)|(\w*\W?)|\s');
 
     List<Match> strings = re.allMatches(text).toList();
       List<String?> st = strings.map((e) => e.group(0)).toList();
@@ -37,7 +37,10 @@ class TextEdditerController extends TextEditingController {
 
         return TextSpan(
           text: st,
-          style: st!.startsWith('<h') ? style?.merge(TextStyle(backgroundColor: Colors.yellow.withOpacity(0.4)))  : style
+          style: st!.startsWith('<h') ? style?.copyWith(
+              backgroundColor: Colors.yellow.withOpacity(0.4),
+              color: Theme.of(context).colorScheme.secondary,
+          )  : style
         );
       }).toList(),
     );
