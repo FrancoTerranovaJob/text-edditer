@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TextEdditerController extends TextEditingController {
-  bool _highlightColor;
-
-  int? _highLightOffset;
+  int? _cursorOffset;
+  String _highlightSeparator = '\u00A0';
+  final RegExp _regExp = RegExp(r'(\u00A0.*?[\s\S]*?\u00A0)|(\w*\W?)|\s');
+  final List<Map<int, int>> _highlights = [];
 
   TextEdditerController({
     required super.text,
-    bool highlightColor = false,
-  }) : _highlightColor = highlightColor;
+  });
 
   @override
   TextSpan buildTextSpan(
@@ -26,38 +26,65 @@ class TextEdditerController extends TextEditingController {
       print(selection.extentOffset);
       print(value.selection.extentOffset);
     }
-    var string = text;
-    final re = RegExp(r'(<h.*?[\s\S]*?h>)|(\w*\W?)|\s');
+    /*
 
-    List<Match> strings = re.allMatches(text).toList();
-      List<String?> st = strings.map((e) => e.group(0)).toList();
+      ["esto es un texto texto texto texto.
+      Por eso en el texto del texto en el texto por el texto..."]
+
+
+
+
+  */
+
+    List<Match> strings = _regExp.allMatches(text).toList();
+    List<String?> st = strings.map((e) => e.group(0)).toList();
     return TextSpan(
       style: style,
       children: st.map((st) {
+        TextStyle textStyle = _getStyle(style!, st!, context);
 
         return TextSpan(
           text: st,
-          style: st!.startsWith('<h') ? style?.copyWith(
-              backgroundColor: Colors.yellow.withOpacity(0.4),
-              color: Theme.of(context).colorScheme.secondary,
-          )  : style
+          style: textStyle,
         );
       }).toList(),
     );
   }
 
   void enableHighlightColor() {
-    _highLightOffset = value.selection.extentOffset;
-
+    _cursorOffset = value.selection.extentOffset;
     text = StringUtils.addCharAtPosition(
-        text, '<hh>', value.selection.extentOffset);
+        text, '$_highlightSeparator$_highlightSeparator', _cursorOffset!);
   }
 
-  int? getHighlightOffset() {
-    return _highLightOffset;
+  int? getOffset() {
+    return _cursorOffset;
   }
 
-  void resetHighlightOffset() {
-    _highLightOffset = null;
+  void resetOffset() {
+    _cursorOffset = null;
+  }
+
+  TextStyle _getStyle(TextStyle defaultStyle, String st, BuildContext context) {
+    Color backgroundColor = Color(0xFFFFC13D);
+    TextDecoration textDecoration = TextDecoration.underline;
+
+    TextStyle textStyle = defaultStyle;
+    if (st.startsWith(_highlightSeparator)) {
+      textStyle = textStyle.copyWith(
+        backgroundColor: backgroundColor,
+        color: Theme.of(context).colorScheme.secondary,
+      );
+    }
+    return textStyle;
+  }
+}
+
+class testFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    print('asdasd');
+    return TextEditingValue();
   }
 }

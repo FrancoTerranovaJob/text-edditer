@@ -9,10 +9,8 @@ class EdditerMonitor {
   final Color? highlightColor;
   final int spaceAmount;
 
-
   EdditerMonitor.newDocument()
-      :
-        controller = TextEdditerController(text: ''),
+      : controller = TextEdditerController(text: ''),
         underlineColor = null,
         highlightColor = null,
         spaceAmount = _defaultSpaceAmount {
@@ -21,28 +19,20 @@ class EdditerMonitor {
 
   EdditerMonitor.fromStorage({
     required String text,
-  })
-      :
-        controller = TextEdditerController(text: text),
+  })  : controller = TextEdditerController(text: text),
         underlineColor = null,
         highlightColor = null,
-        spaceAmount = _defaultSpaceAmount{
+        spaceAmount = _defaultSpaceAmount {
     controller.addListener(_listenTextChanged);
   }
 
-
-
   void _listenTextChanged() {
-
-    if(controller.getHighlightOffset() != null){
+    if (controller.getOffset() != null) {
       controller.removeListener(_listenTextChanged);
-      controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.getHighlightOffset()! + 2));
-      controller.resetHighlightOffset();
+      controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: controller.getOffset()! + 1));
+      controller.resetOffset();
       controller.addListener(_listenTextChanged);
     }
-
-
   }
 }
-
-
