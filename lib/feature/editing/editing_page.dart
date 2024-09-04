@@ -21,8 +21,15 @@ class EditingPage extends StatelessWidget {
                 width: 100,
                 height: 30,
                 child: ElevatedButton(onPressed: (){
-                  _controller.enableHighlightColor();
+                  _controller.enableHighlightColor(highlightColor: Colors.yellow);
                 }, child: Text('highlight',style: Theme.of(context).textTheme.titleLarge,)),
+              ),
+              SizedBox(
+                width: 100,
+                height: 30,
+                child: ElevatedButton(onPressed: (){
+                  _controller.enableHighlightColor(highlightColor: Colors.pink);
+                }, child: Text('highlight pink',style: Theme.of(context).textTheme.titleLarge,)),
               ),
               Expanded(
                 child: TextField(

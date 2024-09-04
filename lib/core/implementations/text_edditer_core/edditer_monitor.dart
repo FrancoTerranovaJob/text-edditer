@@ -10,7 +10,8 @@ class EdditerMonitor {
   final int spaceAmount;
 
   EdditerMonitor.newDocument()
-      : controller = TextEdditerController(text: ''),
+      :
+        controller = TextEdditerController(text: '',  ),
         underlineColor = null,
         highlightColor = null,
         spaceAmount = _defaultSpaceAmount {

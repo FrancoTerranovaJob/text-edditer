@@ -5,13 +5,15 @@ import 'package:flutter/services.dart';
 
 class TextEdditerController extends TextEditingController {
   int? _cursorOffset;
-  String _highlightSeparator = '\u00A0';
+  final String _highlightSeparator = '\u00A0';
+   Color _highlightColor = Colors.yellow ;
   final RegExp _regExp = RegExp(r'(\u00A0.*?[\s\S]*?\u00A0)|(\w*\W?)|\s');
-  final List<Map<int, int>> _highlights = [];
+  final List<Color> _highlights = [];
 
   TextEdditerController({
     required super.text,
-  });
+
+  }) ;
 
   @override
   TextSpan buildTextSpan(
@@ -38,10 +40,14 @@ class TextEdditerController extends TextEditingController {
 
     List<Match> strings = _regExp.allMatches(text).toList();
     List<String?> st = strings.map((e) => e.group(0)).toList();
+    int highlightIndex = -1;
     return TextSpan(
       style: style,
       children: st.map((st) {
-        TextStyle textStyle = _getStyle(style!, st!, context);
+        if (st!.startsWith(_highlightSeparator)) {
+          highlightIndex++;
+        }
+        TextStyle textStyle = _getStyle(style!, st, context,highlightIndex);
 
         return TextSpan(
           text: st,
@@ -51,8 +57,10 @@ class TextEdditerController extends TextEditingController {
     );
   }
 
-  void enableHighlightColor() {
+  void enableHighlightColor({Color? highlightColor}) {
+    _highlightColor = highlightColor ?? _highlightColor;
     _cursorOffset = value.selection.extentOffset;
+    _highlights.add(_highlightColor);
     text = StringUtils.addCharAtPosition(
         text, '$_highlightSeparator$_highlightSeparator', _cursorOffset!);
   }
@@ -65,14 +73,13 @@ class TextEdditerController extends TextEditingController {
     _cursorOffset = null;
   }
 
-  TextStyle _getStyle(TextStyle defaultStyle, String st, BuildContext context) {
-    Color backgroundColor = Color(0xFFFFC13D);
+  TextStyle _getStyle(TextStyle defaultStyle, String st, BuildContext context, int highlightIndex) {
     TextDecoration textDecoration = TextDecoration.underline;
 
     TextStyle textStyle = defaultStyle;
     if (st.startsWith(_highlightSeparator)) {
       textStyle = textStyle.copyWith(
-        backgroundColor: backgroundColor,
+        backgroundColor: _highlights[highlightIndex],
         color: Theme.of(context).colorScheme.secondary,
       );
     }
